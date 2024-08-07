@@ -1,0 +1,45 @@
+import requests
+import json
+
+JIRA_URL = "https://magicthegathering.atlassian.net"
+EMAIL = "baltenhofen@atlassian.com"
+API_TOKEN = "ATATT3xFfGF0TFr4B9JAlrjTnfInLvIGmHpSCpAf7WKurptUisFamB1cCfPnkSs_ePMQXH8hPjwgNfvqJ7tPDA0YDJ3LX58ycsdcH7cY3XxwiuvIvSKynJPbBH6K1Of6kq9paXS8e3Wyrktil1uMA9v9JfEAR3A_dqXjKawFDB7BUu_aQbW93io=06F63077"
+
+def create_issue():
+    # Construct the URL for creating an issue
+    url = f"magicthegathering.atlassian.net/rest/api/3/issue"
+
+    # Prepare the headers
+    headers = {
+        "Authorization": f"Basic {requests.auth._basic_auth_str(EMAIL, API_TOKEN)}",
+        "Content-Type": "application/json"
+    }
+
+    # Define the issue details in JSON format
+    issue_data = {
+        "fields": {
+            "project": {
+                "key": "AFJ"  # Replace with your project key
+            },
+            "summary": "New issue created via Python",
+            "description": "Description of the issue",
+            "issuetype": {
+                "name": "Task"
+            }
+        }
+    }
+
+    # Make the request to create the issue
+    response = requests.post(url, headers=headers, data=json.dumps(issue_data))
+
+    # Check the response
+    if response.status_code == 201:
+        print("Issue created successfully!")
+        print("Issue Key:", response.json()["key"])
+    else:
+        print("Failed to create issue.")
+        print("Status Code:", response.status_code)
+        print("Response:", response.text)
+
+if __name__ == "__main__":
+    create_issue()
