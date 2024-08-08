@@ -3,7 +3,7 @@ import json
 
 JIRA_URL = "https://magicthegathering.atlassian.net"
 EMAIL = "baltenhofen@atlassian.com"
-API_TOKEN = "ATATT3xFfGF0TFr4B9JAlrjTnfInLvIGmHpSCpAf7WKurptUisFamB1cCfPnkSs_ePMQXH8hPjwgNfvqJ7tPDA0YDJ3LX58ycsdcH7cY3XxwiuvIvSKynJPbBH6K1Of6kq9paXS8e3Wyrktil1uMA9v9JfEAR3A_dqXjKawFDB7BUu_aQbW93io=06F63077"
+API_TOKEN = ""
 
 def create_issue():
     # Construct the URL for creating an issue
