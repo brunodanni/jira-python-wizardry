@@ -4,7 +4,7 @@ from requests.auth import HTTPBasicAuth
 
 # Configure your Jira credentials and project details
 JIRA_URL = "https://yourcompany.atlassian.net"  # Replace with your Jira instance URL
-PROJECT_KEY = "AFJ"  # Replace with your specific project key
+PROJECT_KEY = "KEY"  # Replace with your specific project key
 AUTH = HTTPBasicAuth("your_email@example.com", "your_api_token")  # Replace with your Jira email and API token
 
 def get_issues_from_project():
