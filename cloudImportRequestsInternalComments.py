@@ -103,3 +103,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# Attention: Every issue in the JSM project must have a request type assigned. Otherwise, the script will fail and return an HTTPError: 404 exception.
