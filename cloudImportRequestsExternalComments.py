@@ -3,18 +3,18 @@ import csv
 from requests.auth import HTTPBasicAuth
 
 # Configure your Jira credentials and project details
-JIRA_URL = "https://yourcompany.atlassian.net"  # Replace with your Jira URL
-PROJECT_KEY = "AFJ"  # Replace with your project key
-AUTH = HTTPBasicAuth("your_email@example.com", "your_api_token")  # Replace with your email and API token
+JIRA_URL = "https://yourcompany.atlassian.net"  # Replace with your Jira instance URL
+PROJECT_KEY = "KEY"  # Replace with your specific project key
+AUTH = HTTPBasicAuth("your_email@example.com", "your_api_token")  # Replace with your Jira email and API token
 
 def get_issues_from_project():
-    # Construct the API URL for searching issues in the project
+    # Construct the API URL for searching issues within the specified project
     url = f"{JIRA_URL}/rest/api/3/search"
     
-    # Define the JQL query parameters to filter issues by project and fields to retrieve
+    # Set the parameters for the JQL query to filter issues by project and specify fields to retrieve
     params = {"jql": f"project={PROJECT_KEY}", "fields": "id,key"}
     
-    # Send a GET request to the Jira API to fetch issues
+    # Send a GET request to the Jira API to retrieve issues
     response = requests.get(url, auth=AUTH, params=params)
     
     # Raise an exception if the response contains an HTTP error status
@@ -26,15 +26,24 @@ def get_issues_from_project():
 def get_comments_for_issue(issue_key):
     # Construct the API URL to fetch comments for a specific issue
     url = f"{JIRA_URL}/rest/servicedeskapi/request/{issue_key}/comment"
-    
-    # Send a GET request to the Jira API to fetch comments for the issue
-    response = requests.get(url, auth=AUTH)
-    
-    # Raise an exception if the response contains an HTTP error status
-    response.raise_for_status()
-    
-    # Extract and return the list of comments from the JSON response
-    return response.json().get('values', [])
+    try:
+        # Send a GET request to the Jira API to fetch comments for the specified issue
+        response = requests.get(url, auth=AUTH)
+        
+        # Raise an exception if the response contains an HTTP error status
+        response.raise_for_status()
+        
+        # Extract and return the list of comments from the JSON response
+        return response.json().get('values', [])
+    except requests.exceptions.HTTPError as e:
+        # Check if the error is a 404 Not Found error
+        if e.response.status_code == 404:
+            # Print a warning message and skip processing this issue if it doesn't exist or lacks a request type
+            print(f"Warning: Issue {issue_key} does not have a request type or does not exist. Skipping.")
+            return []  # Return an empty list if the issue is not found
+        else:
+            # Re-raise the exception for any other HTTP errors
+            raise
 
 def filter_external_comments(comments):
     # Initialize a list to store external comments
@@ -68,7 +77,7 @@ def export_to_csv(comments, filename='external_comments.csv'):
             writer.writerow({
                 'issueKey': comment.get('issueKey'),
                 'commentId': comment.get('id'),
-                'author': comment.get('author', {}).get('displayName', 'Unknown'),  # Display the author name
+                'author': comment.get('author', {}).get('displayName', 'Unknown'),
                 'body': comment.get('body', ''),  # Assume body is a simple string
                 'created': comment.get('created', '')  # Use the created date as a string
             })
@@ -103,5 +112,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
-# Attention: Every issue in the JSM project must have a request type assigned. Otherwise, the script will fail and return an HTTPError: 404 exception.
